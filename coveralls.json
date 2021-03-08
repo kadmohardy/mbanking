@@ -1,0 +1,17 @@
+{
+  "skip_files": [
+    "lib/mbanking.ex",
+    "lib/mbanking/repo.ex",
+    "lib/mbanking/application.ex",
+    "lib/mbanking/release.ex",
+    "lib/mbanking.ex",
+    "lib/mbanking_web/channels/user_socket.ex",
+    "lib/mbanking_web/views/error_helpers.ex",
+    "test/support/channel_case.ex"
+  ],
+  "coverage_options": {
+    "treat_no_relevant_line_as_covered": true,
+    "output_dir": "cover/",
+    "minimum_coverage": 90
+  }
+}
