@@ -6,9 +6,39 @@ defmodule Mbanking.AccountsTest do
   describe "users" do
     alias Mbanking.Accounts.User
 
-    @valid_attrs %{birth_date: ~D[2010-04-17], city: "some city", countrystatus: "some countrystatus", cpf: "some cpf", email: "some email", gender: "some gender", name: "some name", referral_code: "some referral_code", state: "some state"}
-    @update_attrs %{birth_date: ~D[2011-05-18], city: "some updated city", countrystatus: "some updated countrystatus", cpf: "some updated cpf", email: "some updated email", gender: "some updated gender", name: "some updated name", referral_code: "some updated referral_code", state: "some updated state"}
-    @invalid_attrs %{birth_date: nil, city: nil, countrystatus: nil, cpf: nil, email: nil, gender: nil, name: nil, referral_code: nil, state: nil}
+    @valid_attrs %{
+      birth_date: ~D[2010-04-17],
+      city: "some city",
+      countrystatus: "some countrystatus",
+      cpf: "some cpf",
+      email: "some email",
+      gender: "some gender",
+      name: "some name",
+      referral_code: "some referral_code",
+      state: "some state"
+    }
+    @update_attrs %{
+      birth_date: ~D[2011-05-18],
+      city: "some updated city",
+      countrystatus: "some updated countrystatus",
+      cpf: "some updated cpf",
+      email: "some updated email",
+      gender: "some updated gender",
+      name: "some updated name",
+      referral_code: "some updated referral_code",
+      state: "some updated state"
+    }
+    @invalid_attrs %{
+      birth_date: nil,
+      city: nil,
+      countrystatus: nil,
+      cpf: nil,
+      email: nil,
+      gender: nil,
+      name: nil,
+      referral_code: nil,
+      state: nil
+    }
 
     def user_fixture(attrs \\ %{}) do
       {:ok, user} =

@@ -22,7 +22,6 @@ defmodule Mbanking.MixProject do
         main: "readme",
         extras: ["Readme.md", "CHANGELOG.md"]
       ],
-
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
@@ -76,7 +75,9 @@ defmodule Mbanking.MixProject do
       {:sobelow, "~> 0.8", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
       {:excoveralls, "~> 0.13.0", only: :test},
-      {:params, "~> 2.0"}
+      {:params, "~> 2.0"},
+      {:brcpfcnpj, "~> 0.2.3"},
+      {:cipher, ">= 1.4.0"}
     ]
   end
 

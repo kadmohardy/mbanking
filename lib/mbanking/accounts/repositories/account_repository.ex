@@ -1,4 +1,4 @@
-defmodule Mbanking.Accounts do
+defmodule Mbanking.Accounts.Repositories.AccountRepository do
   @moduledoc """
   The Accounts context.
   """
@@ -6,7 +6,7 @@ defmodule Mbanking.Accounts do
   import Ecto.Query, warn: false
   alias Mbanking.Repo
 
-  alias Mbanking.Accounts.User
+  alias Mbanking.Accounts.Entities.User
 
   @doc """
   Returns the list of users.
@@ -49,10 +49,27 @@ defmodule Mbanking.Accounts do
       {:error, %Ecto.Changeset{}}
 
   """
+  # def create_user(attrs \\ %{}) do
+  #   %User{}
+  #   |> User.changeset(attrs)
+  #   |> Repo.insert()
+  # end
+
   def create_user(attrs \\ %{}) do
-    %User{}
-    |> User.changeset(attrs)
-    |> Repo.insert()
+    cpf = attrs["cpf"]
+
+    result =
+      case Repo.get_by(User, cpf: cpf) do
+        nil  -> %User{cpf: cpf} # Post not found, we build one
+        user -> user          # Post exists, let's use it
+      end
+      |> User.changeset(attrs)
+      |> Repo.insert_or_update()
+
+      case result do
+        {:ok, user} -> user
+        {:error, changeset} -> changeset
+      end
   end
 
   @doc """
