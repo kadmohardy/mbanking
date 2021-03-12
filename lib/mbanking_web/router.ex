@@ -7,7 +7,8 @@ defmodule MbankingWeb.Router do
 
   scope "/api", MbankingWeb.Api, as: :api do
     pipe_through :api
-    resources "/users", UserController, only: [:index, :create]
+    resources "/users", UserController, only: [:index, :create, :update]
+    get "/referrals/:user_id", ReferralController, :index
   end
 
   # Enables LiveDashboard only for development

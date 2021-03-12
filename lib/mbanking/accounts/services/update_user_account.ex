@@ -1,4 +1,4 @@
-defmodule Mbanking.Accounts.Services.CreateUserAccount do
+defmodule Mbanking.Accounts.Services.UpdateUserAccount do
   @moduledoc false
   alias Mbanking.Accounts.Repositories.AccountRepository
   alias Mbanking.Accounts.Services.Shared.ParamsParse
@@ -15,7 +15,9 @@ defmodule Mbanking.Accounts.Services.CreateUserAccount do
 
       # 1. Cadastra usuario nao cadastrado
       referral_code == nil ->
-        create_user_account(user_params)
+        user_params
+        |> Map.delete("cpf")
+        |> update_user_account(user)
 
       # 2. Atualiza uma conta ja cadastrada usario pode indicacao
       true ->
@@ -26,20 +28,17 @@ defmodule Mbanking.Accounts.Services.CreateUserAccount do
           referral_user ->
             user_params
             |> Map.delete("referral_code")
-            |> create_user_account(referral_user)
+            |> update_user_account(user, referral_user)
         end
     end
   end
 
-  defp create_user_account(params) do
-    params
-    |> ParamsParse.parse_params()
-    |> AccountRepository.create_user()
+  defp update_user_account(params, user) do
+    parsed_params = params |> ParamsParse.parse_params()
+    user |> AccountRepository.update_user(parsed_params)
   end
 
-  defp create_user_account(params, referral_user) do
-    params
-    |> ParamsParse.parse_params()
-    |> AccountRepository.create_user_with_referral(referral_user)
+  defp update_user_account(params, user, referral_user) do
+    params |> ParamsParse.parse_params()
   end
 end

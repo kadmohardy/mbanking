@@ -2,6 +2,7 @@ defmodule Mbanking.Accounts.Entities.User do
   @moduledoc false
   use Ecto.Schema
   import Ecto.Changeset
+  alias Mbanking.Referrals.Entities.Referral
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @derive {Phoenix.Param, key: :id}
@@ -14,8 +15,10 @@ defmodule Mbanking.Accounts.Entities.User do
     field :email, :string
     field :gender, :string
     field :name, :string
-    field :referral_code, :string
     field :state, :string
+    field :referral_code, :string
+
+    has_many :referrals, Referral
 
     timestamps()
   end
@@ -36,6 +39,7 @@ defmodule Mbanking.Accounts.Entities.User do
       :referral_code
     ])
     |> validate_inclusion(:gender, ["male", "female"])
+    |> unique_constraint(:cpf)
+    |> unique_constraint(:email)
   end
-
 end

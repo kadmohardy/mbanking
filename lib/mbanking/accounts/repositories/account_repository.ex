@@ -7,115 +7,71 @@ defmodule Mbanking.Accounts.Repositories.AccountRepository do
   alias Mbanking.Repo
 
   alias Mbanking.Accounts.Entities.User
+  alias Mbanking.Referrals.Entities.Referral
 
-  @doc """
-  Returns the list of users.
-
-  ## Examples
-
-      iex> list_users()
-      [%User{}, ...]
-
-  """
   def list_users do
     Repo.all(User)
   end
 
-  @doc """
-  Gets a single user.
+  def get_user(id), do: Repo.get(User, id)
 
-  Raises `Ecto.NoResultsError` if the User does not exist.
+  def get_user_by_cpf(cpf), do: Repo.get_by(User, cpf: cpf)
 
-  ## Examples
-
-      iex> get_user!(123)
-      %User{}
-
-      iex> get_user!(456)
-      ** (Ecto.NoResultsError)
-
-  """
-  def get_user!(id), do: Repo.get!(User, id)
-
-  @doc """
-  Creates a user.
-
-  ## Examples
-
-      iex> create_user(%{field: value})
-      {:ok, %User{}}
-
-      iex> create_user(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  # def create_user(attrs \\ %{}) do
-  #   %User{}
-  #   |> User.changeset(attrs)
-  #   |> Repo.insert()
-  # end
+  def get_user_by_referral(referral_code), do: Repo.get_by(User, referral_code: referral_code)
 
   def create_user(attrs \\ %{}) do
     cpf = attrs["cpf"]
 
-    result =
-      case Repo.get_by(User, cpf: cpf) do
-        nil  -> %User{cpf: cpf} # Post not found, we build one
-        user -> user          # Post exists, let's use it
-      end
-      |> User.changeset(attrs)
-      |> Repo.insert_or_update()
-
-      case result do
-        {:ok, user} -> user
-        {:error, changeset} -> changeset
-      end
+    case Repo.get_by(User, cpf: cpf) do
+      # Post not found, we build one
+      nil -> %User{}
+      # Post exists, let's use it
+      user -> user
+    end
+    |> User.changeset(attrs)
+    |> Repo.insert_or_update()
   end
 
-  @doc """
-  Updates a user.
+  def insert_or_update_referral(%User{} = user, %User{} = referral_user) do
+    case Repo.get_by(Referral, user_id: user.id) do
+      # Post not found, we build one
+      nil -> %Referral{}
+      # Post exists, let's use it
+      referral -> referral
+    end
+    |> Referral.changeset(%{
+      user_id: user.id,
+      user_referral_id: referral_user.id
+    })
+    |> Repo.insert_or_update()
 
-  ## Examples
+  end
 
-      iex> update_user(user, %{field: new_value})
-      {:ok, %User{}}
-
-      iex> update_user(user, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
   def update_user(%User{} = user, attrs) do
     user
     |> User.changeset(attrs)
     |> Repo.update()
   end
 
-  @doc """
-  Deletes a user.
-
-  ## Examples
-
-      iex> delete_user(user)
-      {:ok, %User{}}
-
-      iex> delete_user(user)
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def delete_user(%User{} = user) do
-    Repo.delete(user)
+  def create_user_with_referral(attrs \\ %{}, %User{} = referral_user) do
+    Repo.transaction(fn ->
+      with {:ok, user} <- create_user(attrs),
+           {:ok, _referral} <- insert_or_update_referral(user, referral_user) do
+        user
+      else
+        err -> err
+      end
+    end)
   end
 
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking user changes.
-
-  ## Examples
-
-      iex> change_user(user)
-      %Ecto.Changeset{data: %User{}}
-
-  """
-  def change_user(%User{} = user, attrs \\ %{}) do
-    User.changeset(user, attrs)
+  def update_user_with_referral(attrs \\ %{}, %User{} = user, %User{} = referral_user) do
+    Repo.transaction(fn ->
+      with {:ok, user} <- update_user(user, attrs),
+           {:ok, _referral} <- insert_or_update_referral(user, referral_user) do
+        user
+      else
+        err -> err
+      end
+    end)
   end
 end
