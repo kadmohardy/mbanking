@@ -44,20 +44,22 @@ defmodule MbankingWeb.UserControllerTest do
     test "try register user with already registered email returns error", %{conn: conn} do
       UserFixture.create_user()
 
-      conn = post(conn, Routes.api_user_path(conn, :create), user:
-      %{
-        birth_date: ~D[2010-04-17],
-        city: "some city",
-        country: "some country",
-        cpf: "05679935074",
-        email: "email@email",
-        gender: "teste",
-        name: "some name",
-        state: "some state",
-        status: "completed"
-      })
-      assert json_response(conn, 422)["errors"] != %{}
+      conn =
+        post(conn, Routes.api_user_path(conn, :create),
+          user: %{
+            birth_date: ~D[2010-04-17],
+            city: "some city",
+            country: "some country",
+            cpf: "05679935074",
+            email: "email@email",
+            gender: "teste",
+            name: "some name",
+            state: "some state",
+            status: "completed"
+          }
+        )
 
+      assert json_response(conn, 422)["errors"] != %{}
     end
 
     test "insert user with referral code", %{conn: conn} do
@@ -155,11 +157,11 @@ defmodule MbankingWeb.UserControllerTest do
       user_referral = UserFixture.create_referral_user()
 
       user_params =
-        UserFixture.valid_user_complete_api() |> Map.put_new(:referral_code, user_referral.referral_code)
+        UserFixture.valid_user_complete_api()
+        |> Map.put_new(:referral_code, user_referral.referral_code)
 
       conn = put(conn, "/api/users/#{user.id}", user: user_params)
       assert %{"id" => ^id} = json_response(conn, 201)["data"]
-
     end
   end
 

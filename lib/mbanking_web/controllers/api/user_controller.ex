@@ -45,12 +45,6 @@ defmodule MbankingWeb.Api.UserController do
       |> put_view(MbankingWeb.ChangesetView)
       |> render("error.json", changeset: changeset)
     end
-
-    # user = AccountRepository.get_user(id)
-
-    # with {:ok, %User{} = user} <- AccountRepository.update_user(user, user_params) do
-    #   render(conn, "show.json", user: user)
-    # end
   end
 
   def show(conn, %{"id" => id}) do

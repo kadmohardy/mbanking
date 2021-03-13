@@ -20,7 +20,8 @@ defmodule Mbanking.Accounts.Services.UpdateUserAccount do
         |> update_user_account(user)
 
       true ->
-        IO.puts "======================================================="
+        IO.puts("=======================================================")
+
         case AccountRepository.get_user_by_referral(referral_code) do
           nil ->
             {:error, "Código de indicação inválido"}
