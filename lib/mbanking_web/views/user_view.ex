@@ -15,7 +15,8 @@ defmodule MbankingWeb.Api.UserView do
       %{
         message:
           "Conta criada com sucesso. A conta possui status completo. Você pode indicar novos usuários. Seu código de indicação é: #{
-            user.referral_code}"
+            user.referral_code
+          }"
       }
     end
   end
