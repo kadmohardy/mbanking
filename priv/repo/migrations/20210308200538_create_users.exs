@@ -1,8 +1,10 @@
 defmodule Mbanking.Repo.Migrations.CreateUsers do
+  @moduledoc false
   use Ecto.Migration
 
   def change do
-    create table(:users) do
+    create table(:users, primary_key: false) do
+      add :id, :uuid, primary_key: true
       add :name, :string
       add :email, :string
       add :cpf, :string
@@ -10,11 +12,14 @@ defmodule Mbanking.Repo.Migrations.CreateUsers do
       add :gender, :string
       add :city, :string
       add :state, :string
-      add :countrystatus, :string
+      add :country, :string
       add :referral_code, :string
+      add :status, :string, default: "pending"
 
       timestamps()
     end
 
+    create unique_index(:users, [:cpf])
+    create unique_index(:users, [:referral_code])
   end
 end

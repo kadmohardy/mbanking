@@ -5,6 +5,9 @@
     "lib/mbanking/application.ex",
     "lib/mbanking/release.ex",
     "lib/mbanking.ex",
+    "lib/mbanking_web.ex",
+    "lib/mbanking_web/endpoint.ex",
+    "lib/mbanking_web/gettext.ex",
     "lib/mbanking_web/channels/user_socket.ex",
     "lib/mbanking_web/views/error_helpers.ex",
     "test/support/channel_case.ex"
