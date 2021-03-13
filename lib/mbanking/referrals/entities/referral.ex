@@ -5,6 +5,8 @@ defmodule Mbanking.Referrals.Entities.Referral do
   import Ecto.Changeset
   alias Mbanking.Accounts.Entities.User
 
+  @primary_key {:id, :binary_id, autogenerate: true}
+  @derive {Phoenix.Param, key: :id}
   schema "referrals" do
     belongs_to :user, User, foreign_key: :user_id, type: :binary_id
     belongs_to :referral_user, User, foreign_key: :user_referral_id, type: :binary_id

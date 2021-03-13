@@ -4,6 +4,7 @@ defmodule MbankingWeb.UserControllerTest do
   alias Mbanking.Accounts.Repositories.AccountRepository
   alias Mbanking.UserFixture
   require Logger
+
   def fixture(:user) do
     {:ok, user} = AccountRepository.create_user(UserFixture.valid_user_pending_api())
     user
@@ -40,8 +41,28 @@ defmodule MbankingWeb.UserControllerTest do
              } = json_response(conn, 200)["data"]
     end
 
+    test "try register user with already registered email returns error", %{conn: conn} do
+      UserFixture.create_user()
+
+      conn = post(conn, Routes.api_user_path(conn, :create), user:
+      %{
+        birth_date: ~D[2010-04-17],
+        city: "some city",
+        country: "some country",
+        cpf: "05679935074",
+        email: "email@email",
+        gender: "teste",
+        name: "some name",
+        state: "some state",
+        status: "completed"
+      })
+      assert json_response(conn, 422)["errors"] != %{}
+
+    end
+
     test "insert user with referral code", %{conn: conn} do
       user_referral = UserFixture.create_referral_user()
+
       user_params = %{
         birth_date: ~D[2010-04-17],
         city: "some city",
@@ -53,6 +74,7 @@ defmodule MbankingWeb.UserControllerTest do
         state: "some state",
         referral_code: user_referral.referral_code
       }
+
       conn = post(conn, Routes.api_user_path(conn, :create), user: user_params)
       assert %{"id" => id} = json_response(conn, 201)["data"]
 
@@ -72,7 +94,9 @@ defmodule MbankingWeb.UserControllerTest do
     end
 
     test "create new pending account user", %{conn: conn} do
-      conn = post(conn, Routes.api_user_path(conn, :create), user: UserFixture.valid_user_pending_api())
+      conn =
+        post(conn, Routes.api_user_path(conn, :create), user: UserFixture.valid_user_pending_api())
+
       assert %{"id" => id} = json_response(conn, 201)["data"]
 
       conn = get(conn, Routes.api_user_path(conn, :show, id))
@@ -84,9 +108,14 @@ defmodule MbankingWeb.UserControllerTest do
     end
 
     test "insert user with accounts already registered with account status pending", %{conn: conn} do
-      conn = post(conn, Routes.api_user_path(conn, :create), user: UserFixture.valid_user_pending_api())
+      conn =
+        post(conn, Routes.api_user_path(conn, :create), user: UserFixture.valid_user_pending_api())
 
-      conn = post(conn, Routes.api_user_path(conn, :create), user: UserFixture.valid_user_complete_api())
+      conn =
+        post(conn, Routes.api_user_path(conn, :create),
+          user: UserFixture.valid_user_complete_api()
+        )
+
       assert %{"id" => id} = json_response(conn, 201)["data"]
 
       conn = get(conn, Routes.api_user_path(conn, :show, id))
@@ -97,7 +126,8 @@ defmodule MbankingWeb.UserControllerTest do
              } = json_response(conn, 200)["data"]
     end
 
-    test "insert user with accounts already registered with account status completed should return error", %{conn: conn}  do
+    test "insert user with accounts already registered with account status completed should return error",
+         %{conn: conn} do
       conn = post(conn, Routes.api_user_path(conn, :create), user: UserFixture.valid_user())
 
       conn = post(conn, Routes.api_user_path(conn, :create), user: UserFixture.valid_user())
@@ -118,27 +148,20 @@ defmodule MbankingWeb.UserControllerTest do
       assert %{"id" => ^id} = json_response(conn, 201)["data"]
     end
 
-    test "update user with referral code should return data", %{conn: conn, user: %User{id: id} = user} do
+    test "update user with referral code should return data", %{
+      conn: conn,
+      user: %User{id: id} = user
+    } do
       user_referral = UserFixture.create_referral_user()
-      user_params = UserFixture.valid_user_complete_api() |> Map.put_new(:referral_user, "12312312")
+
+      user_params =
+        UserFixture.valid_user_complete_api() |> Map.put_new(:referral_code, user_referral.referral_code)
 
       conn = put(conn, "/api/users/#{user.id}", user: user_params)
       assert %{"id" => ^id} = json_response(conn, 201)["data"]
 
-      conn = get(conn, Routes.api_user_path(conn, :show, id))
-
-      assert %{
-        "id" => id,
-        "status" => "completed"
-      } = json_response(conn, 200)["data"]
     end
-
-    # test "renders errors when data is invalid", %{conn: conn, user: user} do
-    #   conn = put(conn, Routes.user_path(conn, :update, user), user: @invalid_attrs)
-    #   assert json_response(conn, 422)["errors"] != %{}
-    # end
   end
-
 
   defp create_user(_) do
     user = fixture(:user)

@@ -69,11 +69,11 @@ defmodule Mbanking.Accounts.Repositories.AccountRepository do
 
   def update_user_with_referral(attrs \\ %{}, %User{} = user, %User{} = referral_user) do
     Repo.transaction(fn ->
-      with {:ok, user} <- update_user(user, attrs),
+      with {:ok, user} <- update_user(attrs, user),
            {:ok, _referral} <- insert_or_update_referral(user, referral_user) do
         user
       else
-        err -> err
+        err -> {:error, err}
       end
     end)
   end

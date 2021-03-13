@@ -39,13 +39,16 @@ defmodule Mbanking.AccountsTest do
     end
 
     test "create_user/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = AccountRepository.create_user(UserFixture.invalid_user())
+      assert {:error, %Ecto.Changeset{}} =
+               AccountRepository.create_user(UserFixture.invalid_user())
     end
 
     test "update_user/2 with valid data updates the user" do
       user = UserFixture.create_user()
 
-      assert {:ok, %User{} = user} = AccountRepository.update_user(UserFixture.update_user(), user)
+      assert {:ok, %User{} = user} =
+               AccountRepository.update_user(UserFixture.update_user(), user)
+
       assert user.birth_date == ~D[2010-04-17]
       assert user.city == "Fortaleza"
       assert user.country == "Brazil"
@@ -53,8 +56,9 @@ defmodule Mbanking.AccountsTest do
 
     test "update_user/2 with invalid data returns error changeset" do
       user = UserFixture.create_user()
-      assert {:error, %Ecto.Changeset{}} = AccountRepository.update_user(UserFixture.invalid_user(), user)
-    end
 
+      assert {:error, %Ecto.Changeset{}} =
+               AccountRepository.update_user(UserFixture.invalid_user(), user)
+    end
   end
 end

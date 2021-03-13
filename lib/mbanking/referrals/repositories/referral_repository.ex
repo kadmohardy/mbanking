@@ -40,5 +40,4 @@ defmodule Mbanking.Referrals.Repositories.ReferralRepository do
 
   """
   def get_referral_by_user(user_id), do: Repo.get_by(Referral, user_id: user_id)
-
 end

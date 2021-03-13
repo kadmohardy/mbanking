@@ -16,7 +16,7 @@ defmodule Mbanking.UserFixture do
       status: "completed"
     }
 
-    def valid_user,
+  def valid_user,
     do: %{
       birth_date: ~D[2010-04-17],
       city: "some city",
@@ -35,8 +35,7 @@ defmodule Mbanking.UserFixture do
       cpf: "11310402019",
       email: "email@email",
       gender: "male",
-      name: "some name",
-      status: "pending"
+      name: "some name"
     }
 
   def valid_user_complete_api,
@@ -48,9 +47,21 @@ defmodule Mbanking.UserFixture do
       email: "email@email",
       gender: "male",
       name: "some name",
-      state: "some state",
+      state: "some state"
     }
 
+  @spec valid_user_with_referral_code :: %{
+          birth_date: Date.t(),
+          city: <<_::72>>,
+          country: <<_::96>>,
+          cpf: <<_::88>>,
+          email: <<_::88>>,
+          gender: <<_::32>>,
+          name: <<_::72>>,
+          referral_code: <<_::64>>,
+          state: <<_::80>>,
+          status: <<_::72>>
+        }
   def valid_user_with_referral_code,
     do: %{
       birth_date: ~D[2010-04-17],
@@ -65,7 +76,6 @@ defmodule Mbanking.UserFixture do
       referral_code: "23412545"
     }
 
-
   def update_user,
     do: %{
       birth_date: ~D[2010-04-17],
@@ -79,18 +89,19 @@ defmodule Mbanking.UserFixture do
       status: "completed"
     }
 
-  def invalid_user, do: %{
-    birth_date: nil,
-    city: nil,
-    country: nil,
-    cpf: nil,
-    email: nil,
-    gender: nil,
-    name: nil,
-    referral_code: nil,
-    state: nil,
-    status: nil
-  }
+  def invalid_user,
+    do: %{
+      birth_date: nil,
+      city: nil,
+      country: nil,
+      cpf: nil,
+      email: nil,
+      gender: nil,
+      name: nil,
+      referral_code: nil,
+      state: nil,
+      status: nil
+    }
 
   def create_user do
     {:ok, user} =

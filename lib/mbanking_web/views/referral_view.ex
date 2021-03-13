@@ -6,7 +6,6 @@ defmodule MbankingWeb.Api.ReferralView do
     %{data: render_many(referrals, __MODULE__, "referral.json")}
   end
 
-
   def render("referral.json", %{referral: referral}) do
     %{id: referral.user.id, name: Cipher.decrypt(referral.user.name)}
   end

@@ -15,13 +15,12 @@ defmodule Mbanking.Accounts.Services.UpdateUserAccount do
       user && user.status == "completed" ->
         {:error, "Já existe uma conta com status completo refente a esse CPF "}
 
-      # 1. Cadastra usuario nao cadastrado
       referral_code == nil ->
         user_params
         |> update_user_account(user)
 
-      # 2. Atualiza uma conta ja cadastrada usario pode indicacao
       true ->
+        IO.puts "======================================================="
         case AccountRepository.get_user_by_referral(referral_code) do
           nil ->
             {:error, "Código de indicação inválido"}
@@ -42,7 +41,7 @@ defmodule Mbanking.Accounts.Services.UpdateUserAccount do
 
   defp update_user_account(params, user, referral_user) do
     params
-      |> ParamsParse.parse_params()
-      |> AccountRepository.update_user_with_referral(user, referral_user)
+    |> ParamsParse.parse_params()
+    |> AccountRepository.update_user_with_referral(user, referral_user)
   end
 end
