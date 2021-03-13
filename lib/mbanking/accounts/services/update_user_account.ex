@@ -3,20 +3,21 @@ defmodule Mbanking.Accounts.Services.UpdateUserAccount do
   alias Mbanking.Accounts.Repositories.AccountRepository
   alias Mbanking.Accounts.Services.Shared.ParamsParse
 
-  def execute(user_params) do
+  def execute(id, user_params) do
     referral_code = user_params["referral_code"]
-    cpf = user_params["cpf"]
 
-    user = AccountRepository.get_user_by_cpf(Cipher.encrypt(cpf))
+    user = AccountRepository.get_user(id)
 
     cond do
+      user == nil ->
+        {:error, "Conta inexiste"}
+
       user && user.status == "completed" ->
         {:error, "Já existe uma conta com status completo refente a esse CPF "}
 
       # 1. Cadastra usuario nao cadastrado
       referral_code == nil ->
         user_params
-        |> Map.delete("cpf")
         |> update_user_account(user)
 
       # 2. Atualiza uma conta ja cadastrada usario pode indicacao
@@ -34,11 +35,14 @@ defmodule Mbanking.Accounts.Services.UpdateUserAccount do
   end
 
   defp update_user_account(params, user) do
-    parsed_params = params |> ParamsParse.parse_params()
-    user |> AccountRepository.update_user(parsed_params)
+    params
+    |> ParamsParse.parse_params()
+    |> AccountRepository.update_user(user)
   end
 
   defp update_user_account(params, user, referral_user) do
-    params |> ParamsParse.parse_params()
+    params
+      |> ParamsParse.parse_params()
+      |> AccountRepository.update_user_with_referral(user, referral_user)
   end
 end

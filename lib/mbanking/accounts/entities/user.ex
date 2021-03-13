@@ -39,6 +39,7 @@ defmodule Mbanking.Accounts.Entities.User do
       :referral_code
     ])
     |> validate_inclusion(:gender, ["male", "female"])
+    |> validate_required(:cpf)
     |> unique_constraint(:cpf)
     |> unique_constraint(:email)
   end

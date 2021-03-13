@@ -4,7 +4,7 @@ defmodule MbankingWeb.Api.UserController do
   alias Mbanking.Accounts.Entities.User
   alias Mbanking.Accounts.Repositories.AccountRepository
   alias Mbanking.Accounts.Services.CreateUserAccount
-
+  alias Mbanking.Accounts.Services.UpdateUserAccount
   alias MbankingWeb.Api.Params.UserParams
   action_fallback MbankingWeb.FallbackController
 
@@ -30,13 +30,31 @@ defmodule MbankingWeb.Api.UserController do
     end
   end
 
-
   def update(conn, %{"id" => id, "user" => user_params}) do
-    user = AccountRepository.get_user(id)
+    changeset = UserParams.from(user_params, with: &UserParams.child/2)
 
-    with {:ok, %User{} = user} <- AccountRepository.update_user(user, user_params) do
-      render(conn, "show.json", user: user)
+    if changeset.valid? do
+      with {:ok, user} <- UpdateUserAccount.execute(id, user_params) do
+        conn
+        |> put_status(:created)
+        |> render("show.json", user: user)
+      end
+    else
+      conn
+      |> put_status(:unprocessable_entity)
+      |> put_view(MbankingWeb.ChangesetView)
+      |> render("error.json", changeset: changeset)
     end
+
+    # user = AccountRepository.get_user(id)
+
+    # with {:ok, %User{} = user} <- AccountRepository.update_user(user, user_params) do
+    #   render(conn, "show.json", user: user)
+    # end
   end
 
+  def show(conn, %{"id" => id}) do
+    user = AccountRepository.get_user(id)
+    render(conn, "show.json", user: user)
+  end
 end

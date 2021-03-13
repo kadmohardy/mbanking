@@ -20,16 +20,20 @@ defmodule Mbanking.Accounts.Repositories.AccountRepository do
   def get_user_by_referral(referral_code), do: Repo.get_by(User, referral_code: referral_code)
 
   def create_user(attrs \\ %{}) do
-    cpf = attrs["cpf"]
+    cpf = attrs["cpf"] || attrs[:cpf]
 
-    case Repo.get_by(User, cpf: cpf) do
-      # Post not found, we build one
-      nil -> %User{}
-      # Post exists, let's use it
-      user -> user
+    if is_nil(cpf) do
+      {:error, %Ecto.Changeset{}}
+    else
+      case Repo.get_by(User, cpf: cpf) do
+        # Post not found, we build one
+        nil -> %User{}
+        # Post exists, let's use it
+        user -> user
+      end
+      |> User.changeset(attrs)
+      |> Repo.insert_or_update()
     end
-    |> User.changeset(attrs)
-    |> Repo.insert_or_update()
   end
 
   def insert_or_update_referral(%User{} = user, %User{} = referral_user) do
@@ -44,10 +48,9 @@ defmodule Mbanking.Accounts.Repositories.AccountRepository do
       user_referral_id: referral_user.id
     })
     |> Repo.insert_or_update()
-
   end
 
-  def update_user(%User{} = user, attrs) do
+  def update_user(attrs, %User{} = user) do
     user
     |> User.changeset(attrs)
     |> Repo.update()
