@@ -5,8 +5,23 @@ defmodule MbankingWeb.Api.UserView do
     %{data: render_many(users, __MODULE__, "user.json")}
   end
 
+  def render("message.json", %{user: user}) do
+    if user.status == "pending" do
+      %{
+        message:
+          "Conta criada com sucesso. A conta possui status pendente. Por favor atualize seus dados para finalizar o seu cadastro."
+      }
+    else
+      %{
+        message:
+          "Conta criada com sucesso. A conta possui status completo. Você pode indicar novos usuários. Seu código de indicação é: #{
+            user.referral_code}"
+      }
+    end
+  end
+
   def render("show.json", %{user: user}) do
-    %{data: render_one(user, __MODULE__, "user.json")}
+    %{data: render_one(user, __MODULE__, "message.json")}
   end
 
   def render("user.json", %{user: user}) do

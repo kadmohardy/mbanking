@@ -21,7 +21,7 @@ Em um segundo momento, foi feita a configuração de CI/CD
 A api recebe requisições de usuários para realizar o cadastro de uma nova conta. Na aplicação temos basicamente dois contextos, Accounts e Referrals, o primeiro reflete as contas de usuário e o segundo as indicações. A tabela users armazena as contas cadastradas e referrals, as indicações.
 
 ### 4. Testes
-O projeto possui uma cobertura de 94.7% de testes. Não foram realizados testes de carga.
+O projeto possui uma cobertura de 92.3% de testes. Não foram realizados testes de carga.
 
 To start your Phoenix server:
 

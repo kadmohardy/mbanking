@@ -16,29 +16,21 @@ defmodule MbankingWeb.UserControllerTest do
 
   describe "index" do
     test "lists all users", %{conn: conn} do
+      UserFixture.create_referral_user()
+      UserFixture.create_user()
+
       conn = get(conn, Routes.api_user_path(conn, :index))
-      assert json_response(conn, 200)["data"] == []
+      assert json_response(conn, 200)["data"] |> Enum.count() == 2
     end
   end
 
   describe "create user" do
     test "renders user when data is valid", %{conn: conn} do
       conn = post(conn, Routes.api_user_path(conn, :create), user: UserFixture.valid_user())
-      assert %{"id" => id} = json_response(conn, 201)["data"]
+      response = json_response(conn, 201)["data"]
 
-      conn = get(conn, Routes.api_user_path(conn, :show, id))
-
-      assert %{
-               "id" => id,
-               "birth_date" => "2010-04-17",
-               "city" => "some city",
-               "country" => "some country",
-               "cpf" => "dlKn8Teh4Mr0GeZR%2FQsBXw%3D%3D",
-               "email" => "tAMWaeTm59Tw9hx4H%2F%2BKQw%3D%3D",
-               "gender" => "male",
-               "name" => "D9i1UQ%2BZjQEgoz9rUXI0fg%3D%3D",
-               "state" => "some state"
-             } = json_response(conn, 200)["data"]
+      assert response["message"] =~
+               "Conta criada com sucesso. A conta possui status completo. Você pode indicar novos usuários. Seu código de indicação é:"
     end
 
     test "try register user with already registered email returns error", %{conn: conn} do
@@ -78,35 +70,20 @@ defmodule MbankingWeb.UserControllerTest do
       }
 
       conn = post(conn, Routes.api_user_path(conn, :create), user: user_params)
-      assert %{"id" => id} = json_response(conn, 201)["data"]
+      response = json_response(conn, 201)["data"]
 
-      conn = get(conn, Routes.api_user_path(conn, :show, id))
-
-      assert %{
-               "id" => id,
-               "birth_date" => "2010-04-17",
-               "city" => "some city",
-               "country" => "some country",
-               "cpf" => "dlKn8Teh4Mr0GeZR%2FQsBXw%3D%3D",
-               "email" => "tAMWaeTm59Tw9hx4H%2F%2BKQw%3D%3D",
-               "gender" => "male",
-               "name" => "D9i1UQ%2BZjQEgoz9rUXI0fg%3D%3D",
-               "state" => "some state"
-             } = json_response(conn, 200)["data"]
+      assert response["message"] =~
+               "Conta criada com sucesso. A conta possui status completo. Você pode indicar novos usuários. Seu código de indicação é:"
     end
 
     test "create new pending account user", %{conn: conn} do
       conn =
         post(conn, Routes.api_user_path(conn, :create), user: UserFixture.valid_user_pending_api())
 
-      assert %{"id" => id} = json_response(conn, 201)["data"]
+      response = json_response(conn, 201)["data"]
 
-      conn = get(conn, Routes.api_user_path(conn, :show, id))
-
-      assert %{
-               "id" => id,
-               "status" => "pending"
-             } = json_response(conn, 200)["data"]
+      assert response["message"] =~
+               "Conta criada com sucesso. A conta possui status pendente. Por favor atualize seus dados para finalizar o seu cadastro."
     end
 
     test "insert user with accounts already registered with account status pending", %{conn: conn} do
@@ -118,14 +95,10 @@ defmodule MbankingWeb.UserControllerTest do
           user: UserFixture.valid_user_complete_api()
         )
 
-      assert %{"id" => id} = json_response(conn, 201)["data"]
+      response = json_response(conn, 201)["data"]
 
-      conn = get(conn, Routes.api_user_path(conn, :show, id))
-
-      assert %{
-               "id" => id,
-               "status" => "completed"
-             } = json_response(conn, 200)["data"]
+      assert response["message"] =~
+               "Conta criada com sucesso. A conta possui status completo. Você pode indicar novos usuários. Seu código de indicação é:"
     end
 
     test "insert user with accounts already registered with account status completed should return error",
@@ -147,7 +120,10 @@ defmodule MbankingWeb.UserControllerTest do
 
     test "update user should return data", %{conn: conn, user: %User{id: id} = user} do
       conn = put(conn, "/api/users/#{user.id}", user: UserFixture.valid_user_complete_api())
-      assert %{"id" => ^id} = json_response(conn, 201)["data"]
+      response = json_response(conn, 201)["data"]
+
+      assert response["message"] =~
+               "Conta criada com sucesso. A conta possui status completo. Você pode indicar novos usuários. Seu código de indicação é:"
     end
 
     test "update user with referral code should return data", %{
@@ -161,7 +137,10 @@ defmodule MbankingWeb.UserControllerTest do
         |> Map.put_new(:referral_code, user_referral.referral_code)
 
       conn = put(conn, "/api/users/#{user.id}", user: user_params)
-      assert %{"id" => ^id} = json_response(conn, 201)["data"]
+      response = json_response(conn, 201)["data"]
+
+      assert response["message"] =~
+               "Conta criada com sucesso. A conta possui status completo. Você pode indicar novos usuários. Seu código de indicação é:"
     end
   end
 
